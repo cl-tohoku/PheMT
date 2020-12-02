@@ -81,11 +81,22 @@ alignment : sad
 If you use our dataset for your research, please cite the following paper:
 
 ```
-@InProceedings{fujii2020phemt,
-  author    = {Ryo Fujii, Masato Mita, Kaori Abe, Kazuaki Hanawa, Makoto Morishita, Jun Suzuki and Kentaro Inui},
-  title     = {{PheMT}: A Phenomenon-wise Dataset for Machine Translation Robustness on User-Generated Contents},
-  booktitle = {Proceedings of the 28th International Conference on Computational Linguistics},
-  year      = {2020}
+@inproceedings{fujii-etal-2020-phemt,
+    title = "{P}he{MT}: A Phenomenon-wise Dataset for Machine Translation Robustness on User-Generated Contents",
+    author = "Fujii, Ryo  and
+      Mita, Masato  and
+      Abe, Kaori  and
+      Hanawa, Kazuaki  and
+      Morishita, Makoto  and
+      Suzuki, Jun  and
+      Inui, Kentaro",
+    booktitle = "Proceedings of the 28th International Conference on Computational Linguistics",
+    month = dec,
+    year = "2020",
+    address = "Barcelona, Spain (Online)",
+    publisher = "International Committee on Computational Linguistics",
+    url = "https://www.aclweb.org/anthology/2020.coling-main.521",
+    pages = "5929--5943",
 }
 ```
 
