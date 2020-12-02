@@ -5,7 +5,7 @@ PheMT is a phenomenon-wise dataset designed for evaluating the robustness of Jap
 The dataset is based on the MTNT dataset<sup>[1]</sup>, with additional annotations of four linguistic phenomena common in UGC; Proper Noun, Abbreviated Noun, Colloquial Expression, and Variant.
 To appear at COLING 2020.
 
-See [the paper](https://arxiv.org/abs/2011.02121) for more information.
+See [the paper](https://www.aclweb.org/anthology/2020.coling-main.521) for more information.
 
 ## About this repository
 
