@@ -14,6 +14,7 @@ import plotly.io as pio
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from bs4 import BeautifulSoup
+from scorer import bleu, accuracy
 
 N_LINES_PROPER = 943
 N_LINES_ABBREV = 348
@@ -21,7 +22,6 @@ N_LINES_COLLOQ = 172
 N_LINES_VARIANT = 103
 
 lines_accum = np.cumsum([0, N_LINES_PROPER, N_LINES_ABBREV, N_LINES_ABBREV, N_LINES_COLLOQ, N_LINES_COLLOQ, N_LINES_VARIANT, N_LINES_VARIANT])
-types = ['Proper_Noun', 'Abbreviated_Noun:Orig', 'Abbreviated_Noun:Norm', 'Colloquial_Expression:Orig', 'Colloquial_Expression:Norm', 'Variant:Orig', 'Variant:Norm']
 f_refs = './references.txt'
 f_alignments = './alignments.txt'
 
@@ -34,23 +34,6 @@ def calc_scores(hyps_grouped, refs_grouped, align_grouped, scorer):
         if f'{key}:Orig' in grp and f'{key}:Norm' in grp:
             robust[key] = (round((grp[f'{key}:Orig'] - grp[f'{key}:Norm']) / grp[f'{key}:Norm'] * 100, 2) if grp[f'{key}:Norm'] else 0)
     return scores, robust
-
-
-def accuracy(hyps_grouped, refs_grouped, align_grouped):
-    scores = {}
-    for hyps, alis, tp in zip(hyps_grouped, align_grouped, types):
-        correct = sum(1 for hyp, ali in zip(hyps, alis) if ali in hyp)
-        ratio = round(correct / len(alis) * 100, 1)
-        scores[tp] = ratio
-    return scores
-
-
-def bleu(hyps_grouped, refs_grouped, align_grouped):
-    scores = {}
-    for hyps, refs, tp in zip(hyps_grouped, refs_grouped, types):
-        bleu = sacrebleu.corpus_bleu(hyps, [refs], tokenize='intl')
-        scores[tp] = round(bleu.score, 1)
-    return scores
     
     
 def config_plotly(theme='plotly_white'):
