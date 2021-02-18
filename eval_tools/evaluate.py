@@ -34,8 +34,8 @@ def calc_scores(hyps_grouped, refs_grouped, align_grouped, scorer):
         if f'{key}:Orig' in grp and f'{key}:Norm' in grp:
             robust[key] = (round((grp[f'{key}:Orig'] - grp[f'{key}:Norm']) / grp[f'{key}:Norm'] * 100, 2) if grp[f'{key}:Norm'] else 0)
     return scores, robust
-    
-    
+
+
 def config_plotly(theme='plotly_white'):
     pio.templates.default = theme
     
@@ -77,7 +77,10 @@ def plot_score_tables(fig, pos, score, robust, metric_name, **kwargs):
                         cells=dict(values=[df['Dataset'], df['Orig.'], df['Norm.'], df['ROBUST']], align='left', height=24)), row=row+1, col=col+1
     )
     system_name = kwargs.get('system_name', None)
-    fig.layout.annotations[row*2+col]['text'] = 'scores with {}{}'.format(metric_name, (' ({})'.format(system_name) if system_name else ''))
+    caption = 'scores with {}{}'.format(metric_name, (' ({})'.format(system_name) if system_name else ''))
+    fig.layout.annotations[row*2+col]['text'] = caption
+    
+    return df.to_latex(index=False, caption=caption, column_format='lrrr')
 
     
 def align_digit(x, dec_point=1, force_print_signs=False):
@@ -132,34 +135,41 @@ def main(args):
     nrows_bar = (len(calc_functions) + 1) // 2 * 2 # allocate 2 rows for bar plot
     nrows = nrows_tab + nrows_bar
     ncols = 2
-    
+
     specs = [[{'type': 'table'}, {'type': 'table'}] for _ in range(nrows_tab)] + [[{'type': 'xy', 'rowspan': 2}, {'type': 'xy', 'rowspan': 2}] if i % 2 == 0 else [None, None] for i in range(nrows_bar)]
     fig = make_subplots(rows=nrows, cols=ncols, specs=specs, vertical_spacing=0.05, horizontal_spacing=0.1, subplot_titles=['tmp' for _ in range(nrows * ncols)]) # areas with None annotated are omitted?
 
+    tabs = []
     for i, func in enumerate(calc_functions):
         logger.info('running evaluation with "{}" ...'.format(func.__name__))
         scores, robusts = zip(*[calc_scores(h, refs_grouped, align_grouped, scorer=func) for h in hyps_grouped])
 
         for j, (score, robust) in enumerate(zip(scores, robusts)):
-            plot_score_tables(fig, ((len(calc_functions) + 1) // 2 * j + i // 2, i % 2), score, robust, func.__name__, system_name='System:{}'.format(j+1))
+            tab_latex = plot_score_tables(fig, ((len(calc_functions) + 1) // 2 * j + i // 2, i % 2), score, robust, func.__name__, system_name='System:{}'.format(j+1))
+            tabs.append(tab_latex)
+
         plot_comparison_bars(fig, ((len(calc_functions) + 1) // 2 * len(hyps) + (i // 2 * 2), i % 2), robusts, func.__name__, colors=colors, none_offset=(i // 2 * 2))
-    
+
     fig.for_each_annotation(lambda anno: anno.font.update(dict(size=14)))
     for i, anno in enumerate(fig.layout.annotations):
         if anno['text'] == 'tmp':
             fig.layout.annotations[i]['text'] = ' ' # delete unnecessary titles
-            
+
     fig.update_layout(title_text='PheMT Evaluation Report')
     logger.info('creating report...')
     fig.write_html('report.html', default_width='100%', default_height='{}%'.format(nrows*40), full_html=True)
     add_html_title(file='report.html', title='PheMT Evaluation Report', auto_open=args.auto_open)
-
+    if args.output_tex_tables:
+        with open('tables.tex', 'w') as f:
+            print('\n'.join(tabs), end='', file=f)
+                
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='visualized evaluation script for PheMT corpus (for comparison)')
     parser.add_argument('--hyps', nargs='+', required=True, help='output from systems.')
     parser.add_argument('--functions', nargs='+', default=['bleu', 'accuracy'], help='scoring function to use for testing. need to be implemented.')
     parser.add_argument('--auto_open', action='store_true', help='open report.html once evaluation is finished.')
+    parser.add_argument('--output_tex_tables', action='store_true', help='save tables as latex source.')
     args = parser.parse_args()
     
     main(args)

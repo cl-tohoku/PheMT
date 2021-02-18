@@ -22,8 +22,8 @@ python evaluate_cui.py --hypothesis ${HYPOTHESIS} [--functions ${SCORERS_SPACE_S
 
 # To create a visualized evaluation report in html format,
 cd eval_tools
-python evaluate.py --hyps ${HYPOTHESES_SPACE_SEPARATED} [--functions ${SCORERS_SPACE_SEPARATED}] [--auto_open]
-# e.g.) python evaluate.py --hyps output1.txt output2.txt --functions bleu accuracy --auto_open
+python evaluate.py --hyps ${HYPOTHESES_SPACE_SEPARATED} [--functions ${SCORERS_SPACE_SEPARATED}] [--auto_open] [--output_tex_tables]
+# e.g.) python evaluate.py --hyps output1.txt output2.txt --functions bleu accuracy --auto_open --output_tex_tables
 ```
 
 ## Demo

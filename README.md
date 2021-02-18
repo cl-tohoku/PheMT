@@ -7,6 +7,8 @@ COLING 2020.
 
 See [the paper](https://www.aclweb.org/anthology/2020.coling-main.521) for more information.
 
+New!! ready-to-use [evaluation tools](https://github.com/cl-tohoku/PheMT/tree/main/eval_tools) are now available! (Feb. 2021)
+
 ## About this repository
 
 This repository contains the following.
